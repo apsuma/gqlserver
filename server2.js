@@ -7,7 +7,7 @@ const schema = buildSchema(`
     type Query {
         course(id: Int!): Course
         courses(topic: String): [Course]
-        search(exp: String): [Course]
+        search(filter: String): [Course]
     },
     type Mutation {
         updateCourseTopic(id: Int!, topic: String!): Course
@@ -17,7 +17,7 @@ const schema = buildSchema(`
             description: String
             topic: String!
             url: String!
-            ): Course
+            ): [Course]
     },
     type Course {
         id: Int
@@ -26,6 +26,11 @@ const schema = buildSchema(`
         description: String
         topic: String
         url: String
+        filter: CourseFilter
+    }
+
+    type CourseFilter {
+        title_contains: String
     }
 `);
 
@@ -72,8 +77,11 @@ const getCourses = function(args) {
     }
 }
 
-const search = function(exp) {
-    return coursesData.filter(course => course.title.includes(exp));
+const search = function(args) {
+    if (args.filter) {
+        return coursesData.filter(course => {course.title.includes(args.filter)});
+    }
+    return [];
 }
 
 const updateCourseTopic = function({id, topic}) {
@@ -97,7 +105,7 @@ const createCourse = function (args) {
         url: args.url
     }
     coursesData.push(newCourse);
-    return newCourse;
+    return coursesData;
 }
 
 const root = {
