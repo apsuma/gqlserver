@@ -26,12 +26,8 @@ const schema = buildSchema(`
         description: String
         topic: String
         url: String
-        filter: CourseFilter
     }
 
-    type CourseFilter {
-        title_contains: String
-    }
 `);
 
 const coursesData = [
@@ -77,9 +73,9 @@ const getCourses = function(args) {
     }
 }
 
-const search = function(args) {
-    if (args.filter) {
-        return coursesData.filter(course => {course.title.includes(args.filter)});
+const search = function(filter) {
+    if (filter) {
+        return coursesData.filter(course => course.title.includes(filter));
     }
     return [];
 }
